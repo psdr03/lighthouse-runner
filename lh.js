@@ -1,7 +1,6 @@
 import { singleRun, getMedian } from './utils.js'
 import ora from 'ora'
 
-const resultsTable = {}
 const mobileResults = []
 const desktopResults = []
 
@@ -11,10 +10,6 @@ const loopRun = async (target, num, device) => {
     const currentResult = await singleRun(target, device)
     if (currentResult) {
       throbber.stop()
-    }
-    resultsTable[currentRun] = {
-      ...resultsTable[currentRun],
-      [device]: currentResult
     }
     if (device === "mobile") {
       mobileResults.push(currentResult)
@@ -65,10 +60,6 @@ const loopRun = async (target, num, device) => {
       max: Math.max(...mobileResults),
       median: mobileMedian
     }
-    resultsTable.median = {
-      ...resultsTable.median,
-      "mobile": mobileMedian
-    }
   }
 
   if (desktopMedian) {
@@ -77,12 +68,7 @@ const loopRun = async (target, num, device) => {
       max: Math.max(...desktopResults),
       median: desktopMedian
     }
-    resultsTable.median = {
-      ...resultsTable.median,
-      "desktop": desktopMedian
-    }
   }
-
-  // console.table(resultsTable)
+  
   console.table(summaryTable)
 })();
