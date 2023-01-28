@@ -1,50 +1,20 @@
-const lighthouse = require('lighthouse');
-const chromeLauncher = require('chrome-launcher');
-const constants = require('./constants.js')
-const fs = require('fs')
+// const utils = require('./utils.js')
+// import utils from './utils.js'
+import { singleRun, getMedian } from './utils.js'
+// const ora = require('ora');
+import ora from 'ora'
 
 const resultsTable = {}
 const mobileResults = []
 const desktopResults = []
 
-const getMedian = (arr) => {
-  arr.sort((a, b) => a - b)
-  const mid = Math.floor(arr.length / 2)
-  const median = arr.length % 2 === 1 ?
-    arr[mid] : 
-    (arr[mid - 1] + arr[mid]) / 2;
-  return median;
-}
-
-const singleRun = async (target, device) => {
-  const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
-  let options = {
-    logLevel: 'error',
-    output: 'html',
-    onlyCategories: ['performance'],
-    port: chrome.port,
-    throttling: constants.THROTTLING_MOBILE
-  };
-
-  if (device === "desktop") {
-    options = {
-      ...options,
-      screenEmulation: constants.CONFIG_DESKTOP,
-      formFactor: "desktop",
-      throttling: constants.THROTTLING_DESKTOP
-    }
-  }
-
-  const runnerResult = await lighthouse(target, options);
-  fs.writeFileSync("lhReport.html", runnerResult.report)
-
-  await chrome.kill();
-  return runnerResult.lhr.categories.performance.score * 100
-}
-
 const loopRun = async (target, num, device) => {
   for (let currentRun = 1; currentRun <= num; currentRun++) {
+    const throbber = ora(`running ${device} number: ${currentRun}...`).start();
     const currentResult = await singleRun(target, device)
+    if (currentResult) {
+      throbber.stop()
+    }
     resultsTable[currentRun] = {
       ...resultsTable[currentRun],
       [device]: currentResult

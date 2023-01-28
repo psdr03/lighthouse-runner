@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lighthouse": "^9.6.8"
+    "lighthouse": "^9.6.8",
+    "ora": "^6.1.2"
   }
 }
