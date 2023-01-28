@@ -30,10 +30,9 @@ export const singleRun = async (target, device) => {
 }
 
 export const getMedian = (arr) => {
-  arr.sort((a, b) => a - b)
-  const mid = Math.floor(arr.length / 2)
-  const median = arr.length % 2 === 1 ?
-    arr[mid] : 
-    (arr[mid - 1] + arr[mid]) / 2;
-  return median;
+  const sorted = arr.slice().sort((a, b) => a - b);
+  if (sorted.length % 2 === 1) return sorted[(sorted.length - 1) / 2];
+  const lowerValue = sorted[sorted.length / 2 - 1];
+  const upperValue = sorted[sorted.length / 2];
+  return (lowerValue + upperValue) / 2;
 }

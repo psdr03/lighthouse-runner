@@ -1,7 +1,4 @@
-// const utils = require('./utils.js')
-// import utils from './utils.js'
 import { singleRun, getMedian } from './utils.js'
-// const ora = require('ora');
 import ora from 'ora'
 
 const resultsTable = {}
@@ -45,7 +42,14 @@ const loopRun = async (target, num, device) => {
   const mobileMedian = mobileResults.length > 1 ? getMedian(mobileResults) : null
   const desktopMedian = desktopResults.length > 1 ? getMedian(desktopResults) : null
 
+  const summaryTable = {}
+
   if (mobileMedian) {
+    summaryTable.mobile = {
+      min: Math.min(...mobileResults),
+      max: Math.max(...mobileResults),
+      median: mobileMedian
+    }
     resultsTable.median = {
       ...resultsTable.median,
       "mobile": mobileMedian
@@ -53,10 +57,17 @@ const loopRun = async (target, num, device) => {
   }
 
   if (desktopMedian) {
+    summaryTable.desktop = {
+      min: Math.min(...desktopResults),
+      max: Math.max(...desktopResults),
+      median: desktopMedian
+    }
     resultsTable.median = {
       ...resultsTable.median,
       "desktop": desktopMedian
     }
   }
+
   console.table(resultsTable)
+  console.table(summaryTable)
 })();
