@@ -26,17 +26,32 @@ const loopRun = async (target, num, device) => {
 }
 
 (async () => {
-  const target = process.argv[2]
-  const device = process.argv[3]
-  const count = process.argv[4]
+  const targetIndex = process.argv.indexOf('--target')
+  const deviceIndex = process.argv.indexOf('--device') 
+  const countIndex = process.argv.indexOf('--count')
 
-  if (device === "1") {
-    await loopRun(target, count, "mobile")
-  } else if (device === "2") {
-    await loopRun(target, count, "desktop")
+  if (targetIndex === -1 ) {
+    throw Error('No target specified. Use `--target [website]`')
+  }
+  const targetValue = process.argv[targetIndex + 1]
+
+  const deviceValue = deviceIndex !== -1 ? process.argv[deviceIndex + 1] : "all"
+  if (deviceIndex === -1 || process.argv[deviceIndex + 1] === undefined) {
+    console.log('No device selection specified, use `--device [mobile | desktop | all]` to set a device. Running with all')
+  }
+
+  const countValue = countIndex !== -1 ? process.argv[countIndex + 1] : 5
+  if (countIndex === -1 || process.argv[countIndex + 1] === undefined) {
+    console.log('No run count specified, use `--count [num]` to set the number of runs. Running with 5')
+  } 
+
+  if (deviceValue === "mobile") {
+    await loopRun(targetValue, countValue, "mobile")
+  } else if (deviceValue === "desktop") {
+    await loopRun(targetValue, countValue, "desktop")
   } else {
-    await loopRun(target, count, "mobile")
-    await loopRun(target, count, "desktop")
+    await loopRun(targetValue, countValue, "mobile")
+    await loopRun(targetValue, countValue, "desktop")
   }
 
   const mobileMedian = mobileResults.length > 1 ? getMedian(mobileResults) : null
@@ -68,6 +83,6 @@ const loopRun = async (target, num, device) => {
     }
   }
 
-  console.table(resultsTable)
+  // console.table(resultsTable)
   console.table(summaryTable)
 })();
