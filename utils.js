@@ -1,7 +1,7 @@
 import lighthouse from 'lighthouse'
 import chromeLauncher from 'chrome-launcher'
 import { CONFIG_DESKTOP, THROTTLING_DESKTOP,THROTTLING_MOBILE } from './constants.js'
-import fs from 'fs'
+// import fs from 'fs'
 
 export const singleRun = async (target, device) => {
   const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
@@ -23,7 +23,7 @@ export const singleRun = async (target, device) => {
   }
 
   const runnerResult = await lighthouse(target, options);
-  fs.writeFileSync("lhReport.html", runnerResult.report)
+  // fs.writeFileSync("lhReport.html", runnerResult.report)
 
   await chrome.kill();
   return runnerResult.lhr.categories.performance.score * 100
