@@ -1,6 +1,11 @@
 const DEVTOOLS_RTT_ADJUSTMENT_FACTOR = 3.75
 const DEVTOOLS_THROUGHPUT_ADJUSTMENT_FACTOR = 0.9
 
+export const DEVICES = {
+  mobile: 'mobile',
+  desktop: 'desktop'
+}
+
 export const CONFIG_DESKTOP = {
   mobile: false,
   width: 1350,

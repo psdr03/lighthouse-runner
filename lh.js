@@ -1,29 +1,13 @@
-import { singleRun, getMedian } from './utils.js'
-import ora from 'ora'
-
-const mobileResults = []
-const desktopResults = []
-
-const loopRun = async (target, num, device) => {
-  for (let currentRun = 1; currentRun <= num; currentRun++) {
-    const throbber = ora(`running ${device} number: ${currentRun}...`).start();
-    const currentResult = await singleRun(target, device)
-    if (currentResult) {
-      throbber.stop()
-    }
-    if (device === "mobile") {
-      mobileResults.push(currentResult)
-    } else {
-      desktopResults.push(currentResult)
-    }
-    console.log(`${device} run number: ${currentRun}: ${currentResult}`)
-  }
-}
+import { singleRun, getMedian, loopRun } from './utils.js'
+import { DEVICES } from './constants.js'
 
 (async () => {
   const targetIndex = process.argv.indexOf('--target')
   const deviceIndex = process.argv.indexOf('--device') 
   const countIndex = process.argv.indexOf('--count')
+  const summaryTable = {}
+  let mobileResults = []
+  let desktopResults = []
 
   if (targetIndex === -1 ) {
     throw Error('No target specified. Use `--target [website]`')
@@ -40,19 +24,17 @@ const loopRun = async (target, num, device) => {
     console.log('No run count specified, use `--count [num]` to set the number of runs. Running with 5')
   } 
 
-  if (deviceValue === "mobile") {
-    await loopRun(targetValue, countValue, "mobile")
+  if (deviceValue === DEVICES.mobile) {
+    mobileResults = await loopRun(targetValue, countValue, DEVICES.mobile)
   } else if (deviceValue === "desktop") {
-    await loopRun(targetValue, countValue, "desktop")
+    desktopResults = await loopRun(targetValue, countValue, DEVICES.desktop)
   } else {
-    await loopRun(targetValue, countValue, "mobile")
-    await loopRun(targetValue, countValue, "desktop")
+    mobileResults = await loopRun(targetValue, countValue, DEVICES.mobile)
+    desktopResults = await loopRun(targetValue, countValue, DEVICES.desktop)
   }
 
   const mobileMedian = mobileResults.length > 1 ? getMedian(mobileResults) : null
   const desktopMedian = desktopResults.length > 1 ? getMedian(desktopResults) : null
-
-  const summaryTable = {}
 
   if (mobileMedian) {
     summaryTable.mobile = {
@@ -69,6 +51,10 @@ const loopRun = async (target, num, device) => {
       median: desktopMedian
     }
   }
+
+  if (mobileMedian || desktopMedian) {
+    console.table(summaryTable)
+  }
   
-  console.table(summaryTable)
+  return
 })();

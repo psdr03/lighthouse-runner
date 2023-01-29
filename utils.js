@@ -1,6 +1,7 @@
 import lighthouse from 'lighthouse'
 import chromeLauncher from 'chrome-launcher'
 import { CONFIG_DESKTOP, THROTTLING_DESKTOP,THROTTLING_MOBILE } from './constants.js'
+import ora from 'ora'
 // import fs from 'fs'
 
 export const singleRun = async (target, device) => {
@@ -29,6 +30,20 @@ export const singleRun = async (target, device) => {
   return runnerResult.lhr.categories.performance.score * 100
 }
 
+export const loopRun = async (target, num, device) => {
+  const results = []
+  for (let currentRun = 1; currentRun <= num; currentRun++) {
+    const throbber = ora(`running ${device} number: ${currentRun}...`).start();
+    const currentResult = Math.round(await singleRun(target, device))
+    if (currentResult) {
+      throbber.stop()
+    }
+    results.push(currentResult)
+    console.log(`${device} run ${currentRun}: ${currentResult}`)
+  }
+  return results
+}
+
 export const getMedian = (arr) => {
   const sorted = arr.slice().sort((a, b) => a - b);
   if (sorted.length % 2 === 1) return sorted[(sorted.length - 1) / 2];
@@ -36,3 +51,4 @@ export const getMedian = (arr) => {
   const upperValue = sorted[sorted.length / 2];
   return (lowerValue + upperValue) / 2;
 }
+
